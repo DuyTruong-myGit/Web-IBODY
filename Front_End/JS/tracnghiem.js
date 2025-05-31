@@ -72,7 +72,36 @@ function interpret(score) {
   };
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+  const loginLink = document.getElementById("loginLink");
+  const userMenu = document.getElementById("userMenu");
+  const usernameDisplay = document.getElementById("usernameDisplay");
+  const avatarImg = document.querySelector(".user-button img");
+
+  if (user && loginLink && userMenu && usernameDisplay) {
+    loginLink.style.display = "none";
+    userMenu.style.display = "inline-block";
+    usernameDisplay.innerText = user.fullName || user.username;
+
+    if (avatarImg) {
+      try {
+        const res = await fetch(`http://localhost:5221/api/user/profile/${user.taiKhoanId}`);
+        const data = await res.json();
+
+        avatarImg.src = data.avatarUrl
+          ? `http://localhost:5221${data.avatarUrl}`
+          : "/img/default-avatar.png";
+      } catch (err) {
+        console.error("❌ Lỗi khi tải avatar:", err);
+        avatarImg.src = "/img/default-avatar.png";
+      }
+    }
+  } else {
+    if (userMenu) userMenu.style.display = "none";
+  }
+
   renderQuestions();
 
   const form = document.getElementById("dassForm");
@@ -192,3 +221,28 @@ function logout() {
   alert("Đăng xuất thành công!");
   window.location.href = "./index.html";
 }
+
+
+let currentQuestionIndex = 0;
+
+document.addEventListener("keydown", function (e) {
+  if (e.key === "ArrowDown") {
+    const questions = document.querySelectorAll(".question");
+
+    if (currentQuestionIndex >= questions.length) return;
+
+    const currentQuestion = questions[currentQuestionIndex];
+    const qInputs = currentQuestion.querySelectorAll("input[type='radio']");
+
+    // Chọn đáp án cuối cùng
+    if (qInputs.length > 0) {
+      qInputs[qInputs.length - 1].checked = true;
+    }
+
+    // Cuộn đến câu tiếp theo
+    currentQuestionIndex++;
+    if (currentQuestionIndex < questions.length) {
+      questions[currentQuestionIndex].scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }
+});

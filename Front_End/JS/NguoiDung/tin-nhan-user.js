@@ -96,15 +96,26 @@ async function initChat() {
     }
   });
 }
-
 async function loadExpertList(user) {
   try {
-    const res = await fetch(`http://localhost:5221/api/user/danhSachChuyenGiaKetNoi/${user.taiKhoanId}`);
+    const res = await fetch(`http://localhost:5221/api/user/danhSachChuyenGiaDangTuVan/${user.taiKhoanId}`);
     const experts = await res.json();
     const ul = document.getElementById("expertList");
     ul.innerHTML = "";
 
-    experts.forEach(expert => {
+    // ✅ Lọc trùng theo taiKhoanId
+    const uniqueExperts = [];
+    const seenIds = new Set();
+    experts.forEach(ex => {
+      if (!seenIds.has(ex.taiKhoanId)) {
+        seenIds.add(ex.taiKhoanId);
+        uniqueExperts.push(ex);
+      }
+    });
+
+    console.log("Danh sách chuyên gia (đã lọc):", uniqueExperts);
+
+    uniqueExperts.forEach(expert => {
       const li = document.createElement("li");
       li.textContent = expert.hoTen;
       li.addEventListener("click", () => selectExpert(user, expert));
@@ -114,6 +125,7 @@ async function loadExpertList(user) {
     console.error("Lỗi tải danh sách chuyên gia:", err);
   }
 }
+
 
 async function selectExpert(user, expert) {
   if (!expert || !expert.taiKhoanId) {
@@ -165,13 +177,21 @@ async function loadMessages(user, expert) {
 }
 
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const user = JSON.parse(localStorage.getItem("user"));
   const avatarImg = document.querySelector(".user-button img");
 
   if (user && avatarImg) {
-    avatarImg.src = user.avatarUrl
-      ? `http://localhost:5221${user.avatarUrl}`
-      : "../img/default-avatar.png";
+    try {
+      const res = await fetch(`http://localhost:5221/api/user/profile/${user.taiKhoanId}`);
+      const data = await res.json();
+
+      avatarImg.src = data.avatarUrl
+        ? `http://localhost:5221${data.avatarUrl}`
+        : "/img/default-avatar.png"; // dùng / thay vì ../
+    } catch (err) {
+      console.error("Lỗi khi tải avatar:", err);
+      avatarImg.src = "/img/default-avatar.png";
+    }
   }
 });

@@ -19,13 +19,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     usernameDisplay.innerText = user.fullName || user.username;
 
     if (avatarImg) {
-      avatarImg.src = user.avatarUrl
-        ? `http://localhost:5221${user.avatarUrl}`
-        : "../../img/default-avatar.png";
-    }
-  } else {
-    if (userMenu) userMenu.style.display = "none";
+  try {
+    const res = await fetch(`${BASE_API}/api/user/profile/${user.taiKhoanId}`);
+    const data = await res.json();
+
+    avatarImg.src = data.avatarUrl
+      ? `${BASE_API}${data.avatarUrl}`
+      : "/img/default-avatar.png";
+  } catch (err) {
+    console.error("Lỗi tải avatar:", err);
+    avatarImg.src = "/img/default-avatar.png";
   }
+}
+  } 
 
 
 

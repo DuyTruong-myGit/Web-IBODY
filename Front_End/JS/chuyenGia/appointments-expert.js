@@ -33,10 +33,26 @@ document.addEventListener("DOMContentLoaded", async () => {
       </div>
     `).join("");
 
-    // 🟡 Lịch chờ duyệt
-    const res2 = await fetch(`http://localhost:5221/api/lich-hen/chuyen-gia/${chuyenGiaId}?taiKhoanId=${user.taiKhoanId}&trangThai=cho_duyet`);
-    if (!res2.ok) throw new Error("Không thể tải lịch chờ duyệt");
-    const list2 = await res2.json();
+    // 🟡 Lịch chờ duyệt - gọi lần đầu
+    await loadLichChoDuyet(chuyenGiaId);
+
+    // 🔁 Lặp lại mỗi 10 giây
+    setInterval(() => {
+      loadLichChoDuyet(chuyenGiaId);
+    }, 2000);
+
+  } catch (err) {
+    listDangDienRaEl.innerHTML = listChoDuyetEl.innerHTML = `<p style="color:red;">❌ ${err.message}</p>`;
+  }
+});
+
+async function loadLichChoDuyet(chuyenGiaId) {
+  const user = JSON.parse(localStorage.getItem("user"));
+  const listChoDuyetEl = document.getElementById("lichChoDuyet");
+  try {
+    const res = await fetch(`http://localhost:5221/api/lich-hen/chuyen-gia/${chuyenGiaId}?taiKhoanId=${user.taiKhoanId}&trangThai=cho_duyet`);
+    if (!res.ok) throw new Error("Không thể tải lịch chờ duyệt");
+    const list2 = await res.json();
 
     listChoDuyetEl.innerHTML = list2.length === 0 ? "<p>Không có lịch chờ duyệt.</p>" : list2.map(item => `
       <div class="lich-item">
@@ -50,11 +66,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         </div>
       </div>
     `).join("");
-
   } catch (err) {
-    listDangDienRaEl.innerHTML = listChoDuyetEl.innerHTML = `<p style="color:red;">❌ ${err.message}</p>`;
+    listChoDuyetEl.innerHTML = `<p style="color:red;">❌ ${err.message}</p>`;
   }
-});
+}
 
 function formatDate(dateStr) {
   return new Date(dateStr).toLocaleString("vi-VN");
@@ -70,7 +85,6 @@ async function duyetLich(id) {
     const res = await fetch(`http://localhost:5221/api/lich-hen/duyet-lich/${id}`, { method: "POST" });
     const data = await res.json();
     alert(data.message || "Đã duyệt lịch.");
-    location.reload();
   } catch (err) {
     alert("Lỗi khi duyệt lịch.");
   }
@@ -82,7 +96,6 @@ async function tuChoi(id) {
     const res = await fetch(`http://localhost:5221/api/lich-hen/tu-choi-lich/${id}`, { method: "POST" });
     const data = await res.json();
     alert(data.message || "Đã từ chối lịch.");
-    location.reload();
   } catch (err) {
     alert("Lỗi khi từ chối lịch.");
   }
@@ -120,16 +133,15 @@ function logout() {
   window.location.href = "../index.html";
 }
 
-
 // Giao diện
-    document.getElementById("toggleSidebarBtn").onclick = () => {
-      document.getElementById("sidebar").classList.toggle("collapsed");
-      document.getElementById("sidebar").classList.toggle("expanded");
-      document.getElementById("mainContent").classList.toggle("collapsed");
-      document.getElementById("mainContent").classList.toggle("expanded");
-    };
-    document.getElementById("toggleThemeBtn").onclick = () => {
-      document.body.classList.toggle("dark-mode");
-      document.getElementById("toggleThemeBtn").textContent =
-        document.body.classList.contains("dark-mode") ? "☀️" : "🌙";
-    };
+document.getElementById("toggleSidebarBtn").onclick = () => {
+  document.getElementById("sidebar").classList.toggle("collapsed");
+  document.getElementById("sidebar").classList.toggle("expanded");
+  document.getElementById("mainContent").classList.toggle("collapsed");
+  document.getElementById("mainContent").classList.toggle("expanded");
+};
+document.getElementById("toggleThemeBtn").onclick = () => {
+  document.body.classList.toggle("dark-mode");
+  document.getElementById("toggleThemeBtn").textContent =
+    document.body.classList.contains("dark-mode") ? "☀️" : "🌙";
+};

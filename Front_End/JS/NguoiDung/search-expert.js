@@ -1,6 +1,6 @@
 const API_BASE_URL = "http://localhost:5221/api/tu-van";
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const user = JSON.parse(localStorage.getItem("user"));
   if (!user) {
     alert("Vui lòng đăng nhập để tiếp tục.");
@@ -15,12 +15,23 @@ document.addEventListener("DOMContentLoaded", () => {
   loginLink.style.display = "none";
   userMenu.style.display = "inline-block";
   usernameDisplay.innerText = user.fullName || user.username;
-  if (avatarImg) {
-    avatarImg.src = user.avatarUrl
-      ? `http://localhost:5221${user.avatarUrl}`
-      : "../img/default-avatar.png";
+
+  // ✅ Sửa lỗi: bọc logic avatar trong async function
+  if (user && avatarImg) {
+    try {
+      const res = await fetch(`http://localhost:5221/api/user/profile/${user.taiKhoanId}`);
+      const data = await res.json();
+
+      avatarImg.src = data.avatarUrl
+        ? `http://localhost:5221${data.avatarUrl}`
+        : "/img/default-avatar.png";
+    } catch (err) {
+      console.error("Lỗi khi tải avatar:", err);
+      avatarImg.src = "/img/default-avatar.png";
+    }
   }
 
+  // ✅ Tiếp tục các sự kiện khác như bình thường...
   document.querySelector(".user-button")?.addEventListener("click", () => {
     document.getElementById("userDropdown")?.classList.toggle("show");
   });

@@ -9,6 +9,19 @@
     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
     th, td { padding: 10px; border: 1px solid #ccc; text-align: center; }
     th { background-color: #f0f0f0; }
+
+    html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  flex: 1; /* Chiếm toàn bộ chiều cao còn lại để đẩy footer xuống */
+  padding: 20px;
+}
   </style>
 </head>
 <body>
@@ -65,6 +78,7 @@
       <tbody></tbody>
     </table>
   </div>
+
   <footer class="footer">
     <div class="footer-container">
       <div class="footer-about">

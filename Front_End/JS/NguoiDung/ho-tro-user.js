@@ -2,8 +2,7 @@ const API_BASE_URL = "http://localhost:5221/api";
 
 
 
-// ✅ Gộp xử lý hiển thị avatar + tên tài khoản sau khi đăng nhập
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const user = JSON.parse(localStorage.getItem("user"));
   const loginLink = document.getElementById("loginLink");
   const userMenu = document.getElementById("userMenu");
@@ -16,14 +15,22 @@ document.addEventListener("DOMContentLoaded", () => {
     usernameDisplay.innerText = user.fullName || user.username;
 
     if (avatarImg) {
-      avatarImg.src = user.avatarUrl
-        ? `http://localhost:5221${user.avatarUrl}`
-        : "../../img/default-avatar.png"; // fallback ảnh mặc định
+      try {
+        const res = await fetch(`http://localhost:5221/api/user/profile/${user.taiKhoanId}`);
+        const data = await res.json();
+        avatarImg.src = data.avatarUrl
+          ? `http://localhost:5221${data.avatarUrl}`
+          : "/img/default-avatar.png";
+      } catch (err) {
+        console.error("❌ Lỗi khi tải avatar:", err);
+        avatarImg.src = "/img/default-avatar.png";
+      }
     }
   } else {
     if (userMenu) userMenu.style.display = "none";
   }
 });
+
 
 // ✅ Gửi yêu cầu hỗ trợ
 const form = document.getElementById("supportForm");

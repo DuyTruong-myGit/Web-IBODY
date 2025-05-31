@@ -219,6 +219,33 @@ namespace IBODY_WebAPI.Controllers
             return Ok(chuyenGiaList);
         }
 
+        //bỏ hàm trên
+
+        [HttpGet("danhSachChuyenGiaDangTuVan/{taiKhoanId}")]
+        public async Task<IActionResult> GetExpertsInProgress(int taiKhoanId)
+        {
+            var nguoiDung = await _context.NguoiDungs.FirstOrDefaultAsync(x => x.TaiKhoanId == taiKhoanId);
+            if (nguoiDung == null)
+                return NotFound("Không tìm thấy người dùng.");
+
+            var chuyenGiaList = await _context.LichHens
+                .Include(l => l.ChuyenGia).ThenInclude(cg => cg.TaiKhoan)
+                .Where(l => l.NguoiDungId == nguoiDung.Id &&
+                            (l.TrangThai == "da_dien_ra" || l.TrangThai == "cho_duyet")) // Lọc lịch hẹn đang diễn ra
+                .Select(l => new
+                {
+                    l.ChuyenGia.Id,
+                    HoTen = l.ChuyenGia.HoTen,
+                    Email = l.ChuyenGia.TaiKhoan.Email,
+                    l.ChuyenGia.TaiKhoanId,
+                    TrangThai = l.TrangThai
+                })
+                .Distinct()
+                .ToListAsync();
+
+            return Ok(chuyenGiaList);
+        }
+
         
         [HttpGet("phuong-thuc-thanh-toan")]
         public async Task<IActionResult> GetPhuongThucThanhToan()

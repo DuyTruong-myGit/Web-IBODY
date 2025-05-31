@@ -21,7 +21,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
       // ✅ Chuyển trang tùy vai trò
       if (mappedUser.roles.includes("chuyen_gia")) {
-        window.location.href = "../HTML/chuyenGia/indexChuyenGia.html";
+        window.location.href = "../HTML/chuyenGia/TongHopChuyenGia.html";
       } else if (mappedUser.roles.includes("quan_tri")) {
         window.location.href = "../HTML/Admin/admin-dashboard.html";
       } else {
@@ -186,7 +186,7 @@ loginForm.addEventListener("submit", async (event) => {
         } else if (user.roles.includes("chuyen_gia")) {
           console.log("✅ Quyền chuyên gia xác thực → chuyển trang chuyên gia");
           setTimeout(() => {
-            window.location.replace("../HTML/chuyenGia/IndexChuyenGia.html");
+            window.location.replace("../HTML/chuyenGia/TongHopChuyenGia.html");
           }, 100);
         } else {
           console.log("👤 Quyền người dùng thông thường → về trang chủ");
@@ -252,10 +252,6 @@ document.addEventListener("DOMContentLoaded", () => {
   toggleBtn?.addEventListener("click", () => {
     nav.classList.toggle("open");
   });
-});
-
-
-document.addEventListener("DOMContentLoaded", () => {
   const user = JSON.parse(localStorage.getItem("user"));
   const avatarImg = document.querySelector(".user-button img");
 
@@ -263,5 +259,25 @@ document.addEventListener("DOMContentLoaded", () => {
     avatarImg.src = user.avatarUrl
       ? `http://localhost:5221${user.avatarUrl}`
       : "../img/default-avatar.png";
+  }
+});
+
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  const avatarImg = document.querySelector(".user-button img");
+
+  if (user && avatarImg) {
+    try {
+      const res = await fetch(`http://localhost:5221/api/user/profile/${user.taiKhoanId}`);
+      const data = await res.json();
+
+      avatarImg.src = data.avatarUrl
+        ? `http://localhost:5221${data.avatarUrl}`
+        : "/img/default-avatar.png"; // dùng / thay vì ../ để tránh lỗi đường dẫn
+    } catch (err) {
+      console.error("Lỗi khi tải avatar:", err);
+      avatarImg.src = "/img/default-avatar.png";
+    }
   }
 });

@@ -1,6 +1,6 @@
 const user = JSON.parse(localStorage.getItem("user"));
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async() => {
   const loginLink = document.getElementById("loginLink");
   const userMenu = document.getElementById("userMenu");
   const usernameDisplay = document.getElementById("usernameDisplay");
@@ -12,12 +12,18 @@ document.addEventListener("DOMContentLoaded", () => {
     usernameDisplay.innerText = user.fullName || user.username;
 
     if (avatarImg) {
-      avatarImg.src = user.avatarUrl
-        ? `http://localhost:5221${user.avatarUrl}`
-        : "../../img/default-avatar.png";
-    }
-  } else {
-    if (userMenu) userMenu.style.display = "none";
+  try {
+    const res = await fetch(`http://localhost:5221/api/user/profile/${user.taiKhoanId}`);
+    const data = await res.json();
+
+    avatarImg.src = data.avatarUrl
+      ? `http://localhost:5221${data.avatarUrl}`
+      : "/img/default-avatar.png";
+  } catch (err) {
+    console.error("❌ Lỗi khi tải avatar người dùng:", err);
+    avatarImg.src = "/img/default-avatar.png";
+  }
+}
   }
 
   // Xử lý form gửi yêu cầu nâng cấp

@@ -18,12 +18,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     usernameDisplay.innerText = user.fullName || user.username;
 
     if (avatarImg) {
-      avatarImg.src = user.avatarUrl
-        ? `http://localhost:5221${user.avatarUrl}`
-        : "../../img/default-avatar.png";
-    }
-  } else {
-    if (userMenu) userMenu.style.display = "none";
+  try {
+    const res = await fetch(`http://localhost:5221/api/user/profile/${user.taiKhoanId}`);
+    const data = await res.json();
+
+    avatarImg.src = data.avatarUrl
+      ? `http://localhost:5221${data.avatarUrl}`
+      : "/img/default-avatar.png";
+  } catch (err) {
+    console.error("❌ Lỗi khi tải avatar:", err);
+    avatarImg.src = "/img/default-avatar.png";
+  }
+} 
   }
 
   const tableBody = document.querySelector("#historyTable tbody");

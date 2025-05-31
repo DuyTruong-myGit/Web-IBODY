@@ -6,7 +6,7 @@ if (!user) {
   window.location.href = "../index.html";
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded",async() =>{
   const loginLink = document.getElementById("loginLink");
   const userMenu = document.getElementById("userMenu");
   const usernameDisplay = document.getElementById("usernameDisplay");
@@ -18,16 +18,24 @@ document.addEventListener("DOMContentLoaded", () => {
     usernameDisplay.innerText = user.fullName || user.username;
 
     if (avatarImg) {
-      avatarImg.src = user.avatarUrl
-        ? `http://localhost:5221${user.avatarUrl}`
-        : "../../img/default-avatar.png";
-    }
-  } else {
-    if (userMenu) userMenu.style.display = "none";
-  }
+  try {
+    const res = await fetch(`${API_BASE}/user/profile/${user.taiKhoanId}`);
+    const data = await res.json();
 
-  loadLichHen();
-  loadLichSuTuVan();
+    avatarImg.src = data.avatarUrl
+      ? `http://localhost:5221${data.avatarUrl}`
+      : "/img/default-avatar.png"; // dùng / thay vì ../../
+  } catch (err) {
+    console.error("❌ Lỗi khi tải avatar:", err);
+    avatarImg.src = "/img/default-avatar.png";
+  }
+} else {
+  if (userMenu) userMenu.style.display = "none";
+}
+
+loadLichHen();
+loadLichSuTuVan();
+  }
 });
 
 const lichHenListEl = document.getElementById("lichHenList");
