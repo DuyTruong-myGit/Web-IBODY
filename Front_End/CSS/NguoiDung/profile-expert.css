@@ -1,4 +1,4 @@
-.profile-expert-container {
+/* .profile-expert-container {
   max-width: 1000px;
   margin: 40px auto;
   padding: 20px;
@@ -147,4 +147,195 @@
 .star-rating .star.hover,
 .star-rating .star.selected {
   color: gold;
+} */
+
+
+/* ===== Container tổng ===== */
+.profile-expert-container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #ffffff;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  border-radius: 12px;
+}
+
+/* ===== Banner chuyên gia ===== */
+.expert-banner {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 20px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.expert-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.expert-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background-color: #eee;
+  object-fit: cover;
+  border: 2px solid #ccc;
+}
+
+.expert-details h1 {
+  font-size: 24px;
+  margin: 0 0 8px;
+}
+
+.expert-details p {
+  margin: 4px 0;
+  color: #666;
+}
+
+.expert-rating {
+  font-size: 18px;
+  color: #ffb400;
+}
+
+/* ===== Nút hành động ===== */
+.expert-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.expert-actions .btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.btn-primary {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #2563eb;
+}
+
+.btn-outline-danger {
+  background-color: white;
+  color: #dc2626;
+  border: 2px solid #dc2626;
+}
+
+.btn-outline-danger:hover {
+  background-color: #dc2626;
+  color: white;
+}
+
+/* ===== Tabs ===== */
+.tab-buttons {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.tab-button {
+  flex: 1;
+  padding: 12px;
+  background: #f1f5f9;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.tab-button:hover {
+  background-color: #e2e8f0;
+}
+
+.tab-button.active {
+  background-color: #3b82f6;
+  color: white;
+}
+
+/* ===== Nội dung từng tab ===== */
+.tab-content {
+  display: none;
+  padding: 20px;
+  background: #f9fafb;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.tab-content h3,
+.tab-content h4 {
+  margin-bottom: 10px;
+  color: #1e293b;
+}
+
+.tab-content p {
+  margin-bottom: 15px;
+  color: #374151;
+}
+
+/* ===== Modal tố cáo ===== */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background-color: white;
+  margin: 10% auto;
+  padding: 20px;
+  width: 90%;
+  max-width: 400px;
+  border-radius: 8px;
+  position: relative;
+}
+
+.modal-content h2 {
+  margin-bottom: 15px;
+}
+
+.modal-content textarea {
+  width: 100%;
+  padding: 10px;
+  height: 100px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  resize: none;
+}
+
+.modal-content .btn-danger {
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.modal-content .btn-danger:hover {
+  background-color: #b91c1c;
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 16px;
+  font-size: 24px;
+  color: #888;
+  cursor: pointer;
 }

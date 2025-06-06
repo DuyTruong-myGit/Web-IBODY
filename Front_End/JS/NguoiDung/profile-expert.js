@@ -77,17 +77,17 @@ if (loginLink && userMenu && usernameDisplay) {
       list.appendChild(li);
     });
 
-    const dgList = document.getElementById("expertDanhGiaList");
-    dgList.innerHTML = "";
-    if (!data.danhGia || data.danhGia.length === 0) {
-      dgList.innerHTML = "<li>Chưa có đánh giá nào.</li>";
-    } else {
-      data.danhGia.forEach(dg => {
-        const li = document.createElement("li");
-        li.innerHTML = `<strong>${dg.nguoiDanhGia}</strong>: ${dg.diemSo}/5<br><em>\"${dg.nhanXet}\"</em>`;
-        dgList.appendChild(li);
-      });
-    }
+    // const dgList = document.getElementById("expertDanhGiaList");
+    // dgList.innerHTML = "";
+    // if (!data.danhGia || data.danhGia.length === 0) {
+    //   dgList.innerHTML = "<li>Chưa có đánh giá nào.</li>";
+    // } else {
+    //   data.danhGia.forEach(dg => {
+    //     const li = document.createElement("li");
+    //     li.innerHTML = `<strong>${dg.nguoiDanhGia}</strong>: ${dg.diemSo}/5<br><em>\"${dg.nhanXet}\"</em>`;
+    //     dgList.appendChild(li);
+    //   });
+    // }
   } catch (err) {
     console.error("Lỗi tải thông tin:", err);
     alert("Lỗi khi tải thông tin chuyên gia.");

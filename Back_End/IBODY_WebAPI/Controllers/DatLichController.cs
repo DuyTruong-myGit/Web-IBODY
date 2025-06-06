@@ -82,9 +82,9 @@ namespace IBODY_WebAPI.Controllers
                     thoiGianBatDau = thoiGianBatDau.AddMinutes(30);
                 }
 
-                // Trừ lượt
-                goi.SoLuotConLai -= soCa;
-                if (goi.SoLuotConLai == 0) goi.TrangThai = "het_hieu_luc";
+                 // Trừ lượt  , bỏ vì sai logic
+                // goi.SoLuotConLai -= soCa;
+                // if (goi.SoLuotConLai == 0) goi.TrangThai = "het_hieu_luc";
 
                 await _context.SaveChangesAsync();
 
