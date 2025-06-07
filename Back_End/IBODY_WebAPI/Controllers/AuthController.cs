@@ -35,54 +35,54 @@ namespace IBODY_WebAPI.Controllers
             _emailService = emailService;
         }
 
-        // //✅ Đăng ký
-        // [HttpPost("register")]
-        // public async Task<IActionResult> Register(RegisterDto dto)
-        // {
-        //     var user = new ApplicationUser
-        //     {
-        //         UserName = dto.Email,
-        //         Email = dto.Email,
-        //         FullName = dto.FullName,
-        //         Gender = dto.Gender,
-        //         Dob = dto.Dob,
-        //     };
+        //✅ Đăng ký
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(RegisterDto dto)
+        {
+            var user = new ApplicationUser
+            {
+                UserName = dto.Email,
+                Email = dto.Email,
+                FullName = dto.FullName,
+                Gender = dto.Gender,
+                Dob = dto.Dob,
+            };
 
-        //     var result = await _userManager.CreateAsync(user, dto.Password);
-        //     if (!result.Succeeded)
-        //         return BadRequest(result.Errors);
+            var result = await _userManager.CreateAsync(user, dto.Password);
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
 
-        //     //  Gán role Identity
-        //     if (!await _roleManager.RoleExistsAsync("nguoi_dung"))
-        //         await _roleManager.CreateAsync(new IdentityRole("nguoi_dung"));
+            //  Gán role Identity
+            if (!await _roleManager.RoleExistsAsync("nguoi_dung"))
+                await _roleManager.CreateAsync(new IdentityRole("nguoi_dung"));
 
-        //     await _userManager.AddToRoleAsync(user, "nguoi_dung");
+            await _userManager.AddToRoleAsync(user, "nguoi_dung");
 
-        //     //  THÊM VÀO BẢNG tài khoản để đồng bộ
-        //     var taiKhoan = new TaiKhoan
-        //     {
-        //         Email = user.Email,
-        //         MatKhau = "hashed_by_identity",
-        //         VaiTro = "nguoi_dung",
-        //         TrangThai = "hoat_dong"
-        //     };
+            //  THÊM VÀO BẢNG tài khoản để đồng bộ
+            var taiKhoan = new TaiKhoan
+            {
+                Email = user.Email,
+                MatKhau = "hashed_by_identity",
+                VaiTro = "nguoi_dung",
+                TrangThai = "hoat_dong"
+            };
 
-        //     _context.TaiKhoans.Add(taiKhoan);
-        //     await _context.SaveChangesAsync();
-        //     //THÊM VÀO BẢNG người dùngdùng để đồng bộ
-        //     var nguoiDung = new NguoiDung
-        //     {
-        //         TaiKhoanId = taiKhoan.Id,
-        //         HoTen = user.FullName,
-        //         GioiTinh = user.Gender,
-        //         NgaySinh = user.Dob,
-        //         MucTieuTamLy = null
-        //     };
+            _context.TaiKhoans.Add(taiKhoan);
+            await _context.SaveChangesAsync();
+            //THÊM VÀO BẢNG người dùngdùng để đồng bộ
+            var nguoiDung = new NguoiDung
+            {
+                TaiKhoanId = taiKhoan.Id,
+                HoTen = user.FullName,
+                GioiTinh = user.Gender,
+                NgaySinh = user.Dob,
+                MucTieuTamLy = null
+            };
 
-        //     _context.NguoiDungs.Add(nguoiDung);
-        //     await _context.SaveChangesAsync();
-        //     return Ok(new { message = "Đăng ký thành công" });
-        // }
+            _context.NguoiDungs.Add(nguoiDung);
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Đăng ký thành công" });
+        }
 
         //  Đăng nhập
         [HttpPost("login")]
@@ -141,60 +141,60 @@ namespace IBODY_WebAPI.Controllers
 
 
 
-        [HttpPost("register")]
-        public async Task<IActionResult> RegisterAdmin(RegisterDto dto)
-        {
-            var user = new ApplicationUser
-            {
-                UserName = dto.Email,
-                Email = dto.Email,
-                FullName = dto.FullName,
-                Gender = dto.Gender,
-                Dob = dto.Dob,
-            };
+        // [HttpPost("register")]
+        // public async Task<IActionResult> RegisterAdmin(RegisterDto dto)
+        // {
+        //     var user = new ApplicationUser
+        //     {
+        //         UserName = dto.Email,
+        //         Email = dto.Email,
+        //         FullName = dto.FullName,
+        //         Gender = dto.Gender,
+        //         Dob = dto.Dob,
+        //     };
 
-            var result = await _userManager.CreateAsync(user, dto.Password);
-            if (!result.Succeeded)
-                return BadRequest(result.Errors);
+        //     var result = await _userManager.CreateAsync(user, dto.Password);
+        //     if (!result.Succeeded)
+        //         return BadRequest(result.Errors);
 
-            // Nếu vai trò không tồn tại thì tạo mới
-            if (!await _roleManager.RoleExistsAsync(dto.VaiTro))
-                await _roleManager.CreateAsync(new IdentityRole(dto.VaiTro));
+        //     // Nếu vai trò không tồn tại thì tạo mới
+        //     if (!await _roleManager.RoleExistsAsync(dto.VaiTro))
+        //         await _roleManager.CreateAsync(new IdentityRole(dto.VaiTro));
 
-            // Gán role vào Identity
-            await _userManager.AddToRoleAsync(user, dto.VaiTro);
+        //     // Gán role vào Identity
+        //     await _userManager.AddToRoleAsync(user, dto.VaiTro);
 
-            // Đồng bộ với bảng tài khoản
-            var taiKhoan = new TaiKhoan
-            {
-                Email = user.Email,
-                MatKhau = "hashed_by_identity",
-                VaiTro = dto.VaiTro,
-                TrangThai = "hoat_dong"
-            };
+        //     // Đồng bộ với bảng tài khoản
+        //     var taiKhoan = new TaiKhoan
+        //     {
+        //         Email = user.Email,
+        //         MatKhau = "hashed_by_identity",
+        //         VaiTro = dto.VaiTro,
+        //         TrangThai = "hoat_dong"
+        //     };
 
-            _context.TaiKhoans.Add(taiKhoan);
-            await _context.SaveChangesAsync();
+        //     _context.TaiKhoans.Add(taiKhoan);
+        //     await _context.SaveChangesAsync();
 
-            if (dto.VaiTro == "nguoi_dung")
-            {
-                var nguoiDung = new NguoiDung
-                {
-                    TaiKhoanId = taiKhoan.Id,
-                    HoTen = user.FullName,
-                    GioiTinh = user.Gender,
-                    NgaySinh = user.Dob,
-                    MucTieuTamLy = null
-                };
+        //     if (dto.VaiTro == "nguoi_dung")
+        //     {
+        //         var nguoiDung = new NguoiDung
+        //         {
+        //             TaiKhoanId = taiKhoan.Id,
+        //             HoTen = user.FullName,
+        //             GioiTinh = user.Gender,
+        //             NgaySinh = user.Dob,
+        //             MucTieuTamLy = null
+        //         };
 
-                _context.NguoiDungs.Add(nguoiDung);
-                await _context.SaveChangesAsync();
-            }
+        //         _context.NguoiDungs.Add(nguoiDung);
+        //         await _context.SaveChangesAsync();
+        //     }
 
-            // Nếu là quản trị thì không thêm vào bảng NguoiDung mà chờ xử lý riêng nếu cần
+        //     // Nếu là quản trị thì không thêm vào bảng NguoiDung mà chờ xử lý riêng nếu cần
 
-            return Ok(new { message = $"Đăng ký thành công với vai trò {dto.VaiTro}" });
-        }
+        //     return Ok(new { message = $"Đăng ký thành công với vai trò {dto.VaiTro}" });
+        // }
 
     
         [HttpPost("forgot-password")]

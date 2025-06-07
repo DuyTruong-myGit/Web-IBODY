@@ -73,7 +73,7 @@ namespace IBODY_WebAPI.Controllers
             if (nguoiDung != null)
                 _context.NguoiDungs.Remove(nguoiDung);
 
-            //Nếu là chuyên gia: xoá bản ghi liên quan trong bảng chuyen_gia
+            
             var chuyenGia = await _context.ChuyenGia
                 .FirstOrDefaultAsync(cg => cg.TaiKhoanId == id);
             if (chuyenGia != null)
@@ -132,7 +132,7 @@ namespace IBODY_WebAPI.Controllers
 
             expert.TrangThai = "xac_thuc";
 
-            // ✅ Cập nhật tài khoản
+            //  Cập nhật tài khoản
             var account = await _context.TaiKhoans.FindAsync(expert.TaiKhoanId);
             if (account != null)
             {
@@ -144,7 +144,7 @@ namespace IBODY_WebAPI.Controllers
                 if (nguoiDung != null)
                     _context.NguoiDungs.Remove(nguoiDung);
 
-                // ✅ Thêm vai trò "chuyen_gia" trong Identity nếu chưa có
+                
                 var identityUser = await _userManager.FindByEmailAsync(account.Email);
                 if (identityUser != null)
                 {
@@ -253,13 +253,19 @@ namespace IBODY_WebAPI.Controllers
 
 
 
-        // Xóa lịch hẹn trên hệ thống
         [HttpDelete("lich-hen/{id}")]
         public async Task<IActionResult> DeleteLichHen(int id)
         {
             var lich = await _context.LichHens.FindAsync(id);
             if (lich == null)
                 return NotFound(new { message = "Không tìm thấy lịch hẹn." });
+
+            // Kiểm tra nếu lịch đã qua thời điểm hiện tại thì không cho xóa
+            var now = DateTime.Now;
+            if (lich.ThoiGianKetThuc.HasValue && lich.ThoiGianKetThuc.Value < now)
+            {
+                return BadRequest(new { message = "Không thể xóa lịch hẹn đã kết thúc." });
+            }
 
             _context.LichHens.Remove(lich);
             await _context.SaveChangesAsync();

@@ -97,7 +97,7 @@
 
 
   <!-- footer -->
-  <footer class="footer">
+  <footer class="footer" id="footer">
     <div class="footer-container">
       <div class="footer-about">
           <h4>Về chúng tôi</h4>
@@ -121,5 +121,27 @@
 
   <!-- <script src="../JS/index.js"></script> -->
   <script src="../JS/profile.js"></script>
+  <script>
+  const tabButtons = document.querySelectorAll('.tab-btn');
+  const tabContents = document.querySelectorAll('.tab-content');
+  const footer = document.getElementById('footer');
+
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', function() {
+      // Đổi tab
+      tabButtons.forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      tabContents.forEach(tc => tc.classList.add('hidden'));
+      document.getElementById(this.dataset.tab + '-tab').classList.remove('hidden');
+
+      // Ẩn footer nếu là tab lịch sử tư vấn
+      if (this.dataset.tab === 'history') {
+        footer.style.display = 'none';
+      } else {
+        footer.style.display = '';
+      }
+    });
+  });
+</script>
 </body>
 </html>
