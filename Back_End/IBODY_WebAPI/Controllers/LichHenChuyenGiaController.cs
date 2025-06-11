@@ -15,7 +15,6 @@ namespace IBODY_WebAPI.Controllers
             _context = context;
         }
 
-        //Lịch hẹn dành cho chuyên gia đang đăng nhập
         [HttpGet("chuyen-gia/{chuyenGiaId}")]
         public async Task<IActionResult> GetLichHenChuyenGia(int chuyenGiaId, [FromQuery] int taiKhoanId, [FromQuery] string? trangThai = null)
         {
@@ -76,46 +75,6 @@ namespace IBODY_WebAPI.Controllers
             return Ok(new { message = "Chuyên gia đã hủy lịch hẹn thành công." });
         }
 
-        // [HttpPost("duyet-lich/{lichHenId}")]
-        // public async Task<IActionResult> DuyetLichHen(int lichHenId)
-        // {
-        //     var lich = await _context.LichHens
-        //         .Include(l => l.NguoiDung)
-        //         .FirstOrDefaultAsync(l => l.Id == lichHenId);
-
-        //     if (lich == null || lich.TrangThai != "cho_duyet")
-        //         return BadRequest("Lịch không hợp lệ.");
-
-        //     var chuyenGiaId = lich.ChuyenGiaId;
-        //     var nguoiDungId = lich.NguoiDungId;
-        //     var start = lich.ThoiGianBatDau;
-        //     var end = lich.ThoiGianKetThuc;
-
-        //     var lichSau = await _context.LichHens
-        //         .Where(l => l.ChuyenGiaId == chuyenGiaId && l.ThoiGianBatDau == end && l.Id != lich.Id)
-        //         .OrderBy(l => l.ThoiGianBatDau)
-        //         .FirstOrDefaultAsync();
-
-        //     if (lichSau != null && lichSau.NguoiDungId != nguoiDungId)
-        //     {
-        //         return BadRequest("Có ca ngay sau và không cùng người đặt, phải cách nhau 30 phút.");
-        //     }
-
-        //     var lichTruoc = await _context.LichHens
-        //         .Where(l => l.ChuyenGiaId == chuyenGiaId && l.ThoiGianKetThuc == start && l.Id != lich.Id)
-        //         .OrderByDescending(l => l.ThoiGianBatDau)
-        //         .FirstOrDefaultAsync();
-
-        //     if (lichTruoc != null && lichTruoc.NguoiDungId != nguoiDungId)
-        //     {
-        //         return BadRequest("Có ca ngay trước và không cùng người đặt, phải cách nhau 30 phút.");
-        //     }
-
-        //     lich.TrangThai = "da_dien_ra";
-        //     await _context.SaveChangesAsync();
-
-        //     return Ok(new { message = "Đã duyệt lịch, sẵn sàng cho buổi tư vấn." });
-        // }
 
         [HttpPost("duyet-lich/{lichHenId}")]
         public async Task<IActionResult> DuyetLichHen(int lichHenId)
@@ -132,7 +91,7 @@ namespace IBODY_WebAPI.Controllers
 
             var start = lichGoc.ThoiGianBatDau;
 
-            // ✅ Tìm tất cả lịch liên tiếp cùng người đặt, chuyên gia, cùng ngày, chưa duyệt
+            // Tìm tất cả lịch liên tiếp cùng người đặt, chuyên gia, cùng ngày, chưa duyệt
             var lichCungDot = await _context.LichHens
                 .Where(l =>
                     l.NguoiDungId == nguoiDungId &&
@@ -149,7 +108,7 @@ namespace IBODY_WebAPI.Controllers
 
             int soCa = lichCungDot.Count;
 
-            // ✅ Tìm gói dịch vụ
+            // Tìm gói dịch vụ
             var taiKhoanId = lichGoc.NguoiDung.TaiKhoanId;
             var goi = await _context.GoiDangKies
                 .Where(g => g.TaiKhoanId == taiKhoanId && g.TrangThai == "con_hieu_luc")
@@ -159,12 +118,12 @@ namespace IBODY_WebAPI.Controllers
             if (goi == null)
                 return BadRequest("Không tìm thấy gói hợp lệ.");
 
-            // ⚠️ Không cần kiểm tra SoLuotConLai tại đây (đã check khi đặt), chỉ trừ
+            // Không cần kiểm tra SoLuotConLai tại đây (đã check khi đặt), chỉ trừ
             goi.SoLuotConLai -= soCa;
             if (goi.SoLuotConLai <= 0)
                 goi.TrangThai = "het_hieu_luc";
 
-            // ✅ Cập nhật từng lịch
+            // Cập nhật từng lịch
             foreach (var lich in lichCungDot)
             {
                 lich.TrangThai = "da_dien_ra";

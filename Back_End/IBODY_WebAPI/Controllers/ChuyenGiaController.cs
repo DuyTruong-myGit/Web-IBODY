@@ -124,10 +124,6 @@ namespace IBODY_WebAPI.Controllers
                 return BadRequest(new { message = "Tin nhắn chứa từ ngữ không phù hợp." });
             }
 
-            // _context.TinNhans.Add(tinNhan);
-            // await _context.SaveChangesAsync();
-
-
             await _chatMessageService.AddMessage(new ChatMessage {
                 FromUserId = dto.NguoiGuiId,
                 ToUserId = dto.NguoiNhanId,
@@ -141,21 +137,10 @@ namespace IBODY_WebAPI.Controllers
         [HttpGet("lichSuTinNhan")]
         public async Task<IActionResult> LichSuTinNhan([FromQuery] int taiKhoan1, [FromQuery] int taiKhoan2)
         {
-            // var lichSu = await _context.TinNhans
-            //     .Where(t =>
-            //         (t.NguoiGuiId == taiKhoan1 && t.NguoiNhanId == taiKhoan2) ||
-            //         (t.NguoiGuiId == taiKhoan2 && t.NguoiNhanId == taiKhoan1))
-            //     .OrderBy(t => t.ThoiGian)
-            //     .ToListAsync();
             var lichSu = await _chatMessageService.GetMessages(taiKhoan1, taiKhoan2);
-
-
             return Ok(lichSu);
         }
 
-
-
-        // API lấy danh sách đánh giá của chuyên gia
         [HttpGet("danhGia/{taiKhoanId}")]
         public async Task<IActionResult> GetDanhGiaCuaToi(int taiKhoanId)
         {
@@ -185,8 +170,6 @@ namespace IBODY_WebAPI.Controllers
 
             return Ok(danhGiaList);
         }
-
-
 
         [HttpGet("khach-hang-tu-van/{chuyenGiaId}")]
         public async Task<IActionResult> GetKhachHangTungTuVan(int chuyenGiaId)
@@ -261,7 +244,7 @@ namespace IBODY_WebAPI.Controllers
                     lh.ThoiGianBatDau,
                     lh.ThoiGianKetThuc,
                     lh.TomTat,
-                    lh.NgayTao // ✅ bổ sung để frontend lọc đúng
+                    lh.NgayTao // bổ sung để frontend lọc đúng
                 }).ToListAsync();
 
             var luongLichSu = await _context.YeuCauNhanLuongs
@@ -295,7 +278,7 @@ namespace IBODY_WebAPI.Controllers
 
             const decimal donGiaCa = 500000;
 
-            // ✅ Lấy thời gian của yêu cầu lương gần nhất (nếu có)
+            // Lấy thời gian của yêu cầu lương gần nhất
             var lastRequest = await _context.YeuCauNhanLuongs
                 .Where(y => y.ChuyenGiaId == chuyenGia.Id && y.TrangThai == "da_duyet")
                 .OrderByDescending(y => y.NgayTao)
@@ -303,7 +286,7 @@ namespace IBODY_WebAPI.Controllers
 
             DateTime? lastPaidTime = lastRequest?.NgayTao;
 
-            // ✅ Lấy các lịch hẹn hoàn tất sau thời điểm được trả lương trước đó
+            // Lấy các lịch hẹn hoàn tất sau thời điểm được trả lương trước đó
             var lichChuaTinhLuong = await _context.LichHens
                 .Where(lh => lh.ChuyenGiaId == chuyenGia.Id &&
                             lh.TrangThai == "da_hoan_tat" &&
@@ -335,10 +318,6 @@ namespace IBODY_WebAPI.Controllers
             });
         }
 
-        
-
-
-
         [HttpGet("chi-tiet-luong/{id}")]
         public async Task<IActionResult> ChiTietLuong(int id)
         {
@@ -355,9 +334,6 @@ namespace IBODY_WebAPI.Controllers
             });
         }
 
-
-
-
     }
 
 
@@ -372,14 +348,11 @@ public class CapNhatChuyenGiaDto
     public string? TenNganHang { get; set; }
 }
 
-
-
     public class DoiMatKhauDto
 {
     public string MatKhauCu { get; set; } = null!;
     public string MatKhauMoi { get; set; } = null!;
 }
-
 
 
 }

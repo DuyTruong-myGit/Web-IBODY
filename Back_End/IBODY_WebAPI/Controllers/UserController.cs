@@ -21,7 +21,6 @@ namespace IBODY_WebAPI.Controllers
             _chatMessageService = chatMessageService;
         }
 
-        // ✅ LẤY THÔNG TIN HỒ SƠ
         [HttpGet("profile/{accountId}")]
         public async Task<IActionResult> GetUserProfile(int accountId)
         {
@@ -45,7 +44,6 @@ namespace IBODY_WebAPI.Controllers
             });
         }
 
-        // ✅ CẬP NHẬT THÔNG TIN HỒ SƠ
         [HttpPut("profile/{accountId}")]
         public async Task<IActionResult> UpdateUserProfile(int accountId, [FromBody] UpdateUserProfileDto dto)
         {
@@ -91,10 +89,6 @@ namespace IBODY_WebAPI.Controllers
             return Ok(new { message = "Đã cập nhật avatar", avatarUrl = user.AvatarUrl });
         }
 
-
-
-        
-            //Đánh giá chuyên gia chỉ sau khi kết thúc lịch hẹn
         [HttpPost("them_DanhGia")]
         public async Task<IActionResult> DanhGiaChuyenGia([FromBody] DanhGiaDto dto)
         {
@@ -115,7 +109,7 @@ namespace IBODY_WebAPI.Controllers
 
             var danhGia = new DanhGium
             {
-                LichHenId = lich.Id, // ✅ chỉ cần hợp lệ
+                LichHenId = lich.Id,
                 NguoiDungId = dto.NguoiDungId,
                 ChuyenGiaId = dto.ChuyenGiaId,
                 DiemSo = dto.DiemSo,
@@ -156,12 +150,6 @@ namespace IBODY_WebAPI.Controllers
         [HttpGet("lichSuTinNhan")]
         public async Task<IActionResult> LichSuTinNhan([FromQuery] int taiKhoan1, [FromQuery] int taiKhoan2)
         {
-            // var lichSu = await _context.TinNhans
-            //     .Where(t =>
-            //         (t.NguoiGuiId == taiKhoan1 && t.NguoiNhanId == taiKhoan2) ||
-            //         (t.NguoiGuiId == taiKhoan2 && t.NguoiNhanId == taiKhoan1))
-            //     .OrderBy(t => t.ThoiGian)
-            //     .ToListAsync();
             var lichSu = await _chatMessageService.GetMessages(taiKhoan1, taiKhoan2);
 
             return Ok(lichSu);
@@ -193,11 +181,10 @@ namespace IBODY_WebAPI.Controllers
             return Ok(lichHen);
         }
 
-
+        //bỏ hàm sau , chưa dùng tới 
         [HttpGet("danhSachChuyenGiaKetNoi/{taiKhoanId}")]
         public async Task<IActionResult> GetConnectedExperts(int taiKhoanId)
         {
-            // Lấy danh sách tin nhắn có liên quan đến người dùng này
             var chuyenGiaIds = await _context.TinNhans
                 .Where(t => t.NguoiGuiId == taiKhoanId || t.NguoiNhanId == taiKhoanId)
                 .Select(t => t.NguoiGuiId == taiKhoanId ? t.NguoiNhanId : t.NguoiGuiId)
@@ -219,7 +206,7 @@ namespace IBODY_WebAPI.Controllers
             return Ok(chuyenGiaList);
         }
 
-        //bỏ hàm trên
+       
 
         [HttpGet("danhSachChuyenGiaDangTuVan/{taiKhoanId}")]
         public async Task<IActionResult> GetExpertsInProgress(int taiKhoanId)
@@ -231,7 +218,7 @@ namespace IBODY_WebAPI.Controllers
             var chuyenGiaList = await _context.LichHens
                 .Include(l => l.ChuyenGia).ThenInclude(cg => cg.TaiKhoan)
                 .Where(l => l.NguoiDungId == nguoiDung.Id &&
-                            (l.TrangThai == "da_dien_ra" || l.TrangThai == "cho_duyet")) // Lọc lịch hẹn đang diễn ra
+                            (l.TrangThai == "da_dien_ra" || l.TrangThai == "cho_duyet"))
                 .Select(l => new
                 {
                     l.ChuyenGia.Id,
@@ -291,8 +278,6 @@ namespace IBODY_WebAPI.Controllers
             return Ok(new { message = "Đã gửi yêu cầu xác nhận chuyển khoản." });
         }
 
-
-
         [HttpGet("lich-su-goi/{taiKhoanId}")]
         public async Task<IActionResult> LichSuGoiDangKy(int taiKhoanId)
         {
@@ -315,7 +300,6 @@ namespace IBODY_WebAPI.Controllers
             return Ok(lichSu);
         }
 
-        // lấy chi tiết hóa đơn gói
         [HttpGet("goi-dang-ky/{id}")]
         public async Task<IActionResult> LayChiTietGoiDangKy(int id)
         {
@@ -347,7 +331,6 @@ namespace IBODY_WebAPI.Controllers
         }
 
 
-
     }
 
 
@@ -373,7 +356,6 @@ namespace IBODY_WebAPI.Controllers
     public string CurrentPassword { get; set; } = null!;
     public string NewPassword { get; set; } = null!;
 }
-
 
 
     public class ThanhToanDto

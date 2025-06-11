@@ -14,7 +14,6 @@ namespace IBODY_WebAPI.Controllers
             _context = context;
         }
 
-        // GET: api/thoi-gian-ranh/chuyen-gia/5
         [HttpGet("chuyen-gia/{chuyenGiaId}")]
         public async Task<IActionResult> GetByChuyenGia(int chuyenGiaId)
         {
@@ -31,7 +30,6 @@ namespace IBODY_WebAPI.Controllers
             return Ok(list);
         }
 
-        // POST: api/thoi-gian-ranh
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] ThoiGianRanhDto dto)
         {
@@ -47,7 +45,7 @@ namespace IBODY_WebAPI.Controllers
             return Ok(new { message = "Đã thêm thời gian rảnh." });
         }
 
-        // PUT: api/thoi-gian-ranh/5
+
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] ThoiGianRanhDto dto)
         {
@@ -63,7 +61,6 @@ namespace IBODY_WebAPI.Controllers
             return Ok(new { message = "Đã cập nhật thời gian rảnh." });
         }
 
-        // DELETE: api/thoi-gian-ranh/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

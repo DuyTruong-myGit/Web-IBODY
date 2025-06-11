@@ -35,7 +35,7 @@ namespace IBODY_WebAPI.Controllers
             _emailService = emailService;
         }
 
-        //✅ Đăng ký
+
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
@@ -84,7 +84,6 @@ namespace IBODY_WebAPI.Controllers
             return Ok(new { message = "Đăng ký thành công" });
         }
 
-        //  Đăng nhập
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto dto)
         {
@@ -105,7 +104,7 @@ namespace IBODY_WebAPI.Controllers
             if (!passwordValid)
                 return Unauthorized(new { message = "Mật khẩu không đúng." });
 
-            // ✅ Thực hiện đăng nhập (tạo cookie)
+            // Thực hiện đăng nhập (tạo cookie)
             await _signInManager.SignInAsync(user, isPersistent: false);
 
             var roles = await _userManager.GetRolesAsync(user);
@@ -136,66 +135,6 @@ namespace IBODY_WebAPI.Controllers
                 }
             });
         }
-
-
-
-
-
-        // [HttpPost("register")]
-        // public async Task<IActionResult> RegisterAdmin(RegisterDto dto)
-        // {
-        //     var user = new ApplicationUser
-        //     {
-        //         UserName = dto.Email,
-        //         Email = dto.Email,
-        //         FullName = dto.FullName,
-        //         Gender = dto.Gender,
-        //         Dob = dto.Dob,
-        //     };
-
-        //     var result = await _userManager.CreateAsync(user, dto.Password);
-        //     if (!result.Succeeded)
-        //         return BadRequest(result.Errors);
-
-        //     // Nếu vai trò không tồn tại thì tạo mới
-        //     if (!await _roleManager.RoleExistsAsync(dto.VaiTro))
-        //         await _roleManager.CreateAsync(new IdentityRole(dto.VaiTro));
-
-        //     // Gán role vào Identity
-        //     await _userManager.AddToRoleAsync(user, dto.VaiTro);
-
-        //     // Đồng bộ với bảng tài khoản
-        //     var taiKhoan = new TaiKhoan
-        //     {
-        //         Email = user.Email,
-        //         MatKhau = "hashed_by_identity",
-        //         VaiTro = dto.VaiTro,
-        //         TrangThai = "hoat_dong"
-        //     };
-
-        //     _context.TaiKhoans.Add(taiKhoan);
-        //     await _context.SaveChangesAsync();
-
-        //     if (dto.VaiTro == "nguoi_dung")
-        //     {
-        //         var nguoiDung = new NguoiDung
-        //         {
-        //             TaiKhoanId = taiKhoan.Id,
-        //             HoTen = user.FullName,
-        //             GioiTinh = user.Gender,
-        //             NgaySinh = user.Dob,
-        //             MucTieuTamLy = null
-        //         };
-
-        //         _context.NguoiDungs.Add(nguoiDung);
-        //         await _context.SaveChangesAsync();
-        //     }
-
-        //     // Nếu là quản trị thì không thêm vào bảng NguoiDung mà chờ xử lý riêng nếu cần
-
-        //     return Ok(new { message = $"Đăng ký thành công với vai trò {dto.VaiTro}" });
-        // }
-
     
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest model)
@@ -210,7 +149,7 @@ namespace IBODY_WebAPI.Controllers
             user.ResetTokenExpiry = DateTime.UtcNow.AddMinutes(15);
             await _context.SaveChangesAsync();
 
-            // Soạn nội dung email chỉ chứa token (không chứa link)
+            // Soạn nội dung email chỉ chứa token
             string emailContent = $@"
                 <h3>Khôi phục mật khẩu</h3>
                 <p>Mã xác nhận của bạn là:</p>
@@ -232,19 +171,19 @@ namespace IBODY_WebAPI.Controllers
             if (taiKhoan == null)
                 return BadRequest("Token không hợp lệ hoặc đã hết hạn.");
 
-            // ✅ Tìm user bên Identity
+            //Tìm user bên Identity
             var user = await _userManager.FindByEmailAsync(taiKhoan.Email);
             if (user == null)
                 return BadRequest("Không tìm thấy người dùng trong Identity.");
 
-            // ✅ Reset mật khẩu Identity
+            // Reset mật khẩu Identity
             var removePassword = await _userManager.RemovePasswordAsync(user);
             var addPassword = await _userManager.AddPasswordAsync(user, model.NewPassword);
 
             if (!addPassword.Succeeded)
                 return BadRequest("Không thể cập nhật mật khẩu.");
 
-            // ✅ Đồng bộ mật khẩu bảng riêng nếu bạn vẫn cần dùng
+            // Đồng bộ mật khẩu bảng riêng
             taiKhoan.MatKhau = "hashed_by_identity";
             taiKhoan.ResetToken = null;
             taiKhoan.ResetTokenExpiry = null;
@@ -264,73 +203,72 @@ namespace IBODY_WebAPI.Controllers
         }
 
         [HttpGet("google-callback")]
-public async Task<IActionResult> GoogleCallback()
-{
-    // ✅ Lấy kết quả xác thực từ Google
-    var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
-
-    if (!result.Succeeded)
-    {
-        var errorMsg = result.Failure?.Message ?? "Google login failed";
-        return BadRequest(errorMsg);
-    }
-
-    // ✅ Trích xuất thông tin từ claim
-    var claims = result.Principal?.Identities?.FirstOrDefault()?.Claims;
-    var email = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
-    var fullName = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
-
-    if (string.IsNullOrWhiteSpace(email))
-        return BadRequest("Không nhận được email từ Google.");
-
-    // ✅ Kiểm tra tài khoản trong bảng 'tai_khoan'
-    var existingAccount = await _context.TaiKhoans.FirstOrDefaultAsync(tk => tk.Email == email);
-
-    if (existingAccount == null)
-    {
-        // ✅ Nếu chưa tồn tại → tạo mới tài khoản
-        var newAccount = new TaiKhoan
+        public async Task<IActionResult> GoogleCallback()
         {
-            Email = email,
-            MatKhau = null, // không cần mật khẩu
-            VaiTro = "nguoi_dung",
-            TrangThai = "hoat_dong"
-        };
+            // Lấy kết quả xác thực từ Google
+            var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
 
-        _context.TaiKhoans.Add(newAccount);
-        await _context.SaveChangesAsync();
-        existingAccount = newAccount;
+            if (!result.Succeeded)
+            {
+                var errorMsg = result.Failure?.Message ?? "Google login failed";
+                return BadRequest(errorMsg);
+            }
 
-        // ✅ Có thể thêm vào bảng 'nguoi_dung' nếu bạn dùng
-        var newNguoiDung = new NguoiDung
-        {
-            TaiKhoanId = newAccount.Id,
-            HoTen = fullName ?? "Người dùng Google",
-            NgaySinh = null,
-            GioiTinh = null,
-            MucTieuTamLy = null,
-            AvatarUrl = null
-        };
+            //  Trích xuất thông tin từ claim
+            var claims = result.Principal?.Identities?.FirstOrDefault()?.Claims;
+            var email = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            var fullName = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
 
-        _context.NguoiDungs.Add(newNguoiDung);
-        await _context.SaveChangesAsync();
-    }
+            if (string.IsNullOrWhiteSpace(email))
+                return BadRequest("Không nhận được email từ Google.");
 
-    // ✅ Tạo JSON chứa thông tin người dùng để gửi về FE
-    var googleUserJson = JsonSerializer.Serialize(new
-    {
-        userId = existingAccount.Id,
-        email = existingAccount.Email,
-        role = existingAccount.VaiTro,
-        fullName = fullName ?? existingAccount.Email
-    });
+            //  Kiểm tra tài khoản trong bảng 'tai_khoan'
+            var existingAccount = await _context.TaiKhoans.FirstOrDefaultAsync(tk => tk.Email == email);
 
-    // ✅ Redirect về frontend + đính kèm thông tin
-    // CHỈ sửa dòng này trong callback:
-var redirectUrl = $"http://127.0.0.1:5500/Front_End/HTML/Index.html?googleUser={Uri.EscapeDataString(googleUserJson)}";
+            if (existingAccount == null)
+            {
+                // Nếu chưa tồn tại → tạo mới tài khoản
+                var newAccount = new TaiKhoan
+                {
+                    Email = email,
+                    MatKhau = null,
+                    VaiTro = "nguoi_dung",
+                    TrangThai = "hoat_dong"
+                };
 
-    return Redirect(redirectUrl);
-}
+                _context.TaiKhoans.Add(newAccount);
+                await _context.SaveChangesAsync();
+                existingAccount = newAccount;
+
+                //  Có thể thêm vào bảng 'nguoi_dung' 
+                var newNguoiDung = new NguoiDung
+                {
+                    TaiKhoanId = newAccount.Id,
+                    HoTen = fullName ?? "Người dùng Google",
+                    NgaySinh = null,
+                    GioiTinh = null,
+                    MucTieuTamLy = null,
+                    AvatarUrl = null
+                };
+
+                _context.NguoiDungs.Add(newNguoiDung);
+                await _context.SaveChangesAsync();
+            }
+
+            // Tạo JSON chứa thông tin người dùng để gửi về FE
+            var googleUserJson = JsonSerializer.Serialize(new
+            {
+                userId = existingAccount.Id,
+                email = existingAccount.Email,
+                role = existingAccount.VaiTro,
+                fullName = fullName ?? existingAccount.Email
+            });
+
+            // Redirect về frontend + đính kèm thông tin
+            var redirectUrl = $"http://127.0.0.1:5500/Front_End/HTML/Index.html?googleUser={Uri.EscapeDataString(googleUserJson)}";
+
+            return Redirect(redirectUrl);
+        }
 
 
 
@@ -347,15 +285,6 @@ public class ResetPasswordRequest
 }
 
 
-
-    // public class RegisterDto
-    // {
-    //     public string Email { get; set; } = null!;
-    //     public string Password { get; set; } = null!;
-    //     public string? FullName { get; set; }
-    //     public string? Gender { get; set; }
-    //     public DateTime? Dob { get; set; }
-    // }
 
     public class LoginDto
     {

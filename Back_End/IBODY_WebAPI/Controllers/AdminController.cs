@@ -30,7 +30,7 @@ namespace IBODY_WebAPI.Controllers
 
 
         [HttpGet("accounts")]
-        public async Task<IActionResult> GetAllAccounts()
+        public async Task<IActionResult> GetAllAccounts() 
         {
             var identityUsers = _userManager.Users.ToList(); 
             var taiKhoans = await _context.TaiKhoans.ToListAsync();
@@ -58,8 +58,6 @@ namespace IBODY_WebAPI.Controllers
         }
 
 
-
-        // Xóa tài khoản 
         [HttpDelete("account/{id}")]
         public async Task<IActionResult> DeleteAccount(int id)
         {
@@ -86,7 +84,6 @@ namespace IBODY_WebAPI.Controllers
                 await _userManager.DeleteAsync(identityUser);
             }
 
-            // Xoá tài khoản
             _context.TaiKhoans.Remove(taiKhoan);
 
             await _context.SaveChangesAsync();
@@ -132,13 +129,12 @@ namespace IBODY_WebAPI.Controllers
 
             expert.TrangThai = "xac_thuc";
 
-            //  Cập nhật tài khoản
+        
             var account = await _context.TaiKhoans.FindAsync(expert.TaiKhoanId);
             if (account != null)
             {
                 account.VaiTro = "chuyen_gia";
 
-                // Xóa bản ghi người dùng nếu có (nâng cấp)
                 var nguoiDung = await _context.NguoiDungs
                     .FirstOrDefaultAsync(nd => nd.TaiKhoanId == account.Id);
                 if (nguoiDung != null)
@@ -161,8 +157,6 @@ namespace IBODY_WebAPI.Controllers
         }
 
 
-
-
         [HttpPost("expert-reject/{id}")]
         public async Task<IActionResult> RejectExpert(int id)
         {
@@ -175,7 +169,7 @@ namespace IBODY_WebAPI.Controllers
 
             expert.TrangThai = "tu_choi";
 
-            // ✅ Xoá role "chuyen_gia" khỏi hệ thống Identity nếu có
+            // Xoá role "chuyen_gia" khỏi hệ thống Identity nếu có
             var taiKhoan = await _context.TaiKhoans.FindAsync(expert.TaiKhoanId);
             if (taiKhoan != null)
             {
@@ -195,7 +189,6 @@ namespace IBODY_WebAPI.Controllers
         }   
 
 
-        // hiển thị toàn bộ lịch hẹn đang có trên hệ thống
         [HttpGet("lich-hen")]
         public async Task<IActionResult> GetAllLichHen()
         {
@@ -232,17 +225,12 @@ namespace IBODY_WebAPI.Controllers
                 });
         }
 
-        // Cập nhật lịch hẹn trên hệ thống
         [HttpPut("lich-hen/{id}")]
         public async Task<IActionResult> UpdateLichHen(int id, [FromBody] UpdateLichHenDto dto)
         {
             var lich = await _context.LichHens.FindAsync(id);
             if (lich == null)
                 return NotFound(new { message = "Không tìm thấy lịch hẹn." });
-            // if (lich.TrangThai == "da_thanh_toan" || lich.TrangThai == "da_dien_ra")
-            // {
-            //     return BadRequest(new { message = "Lịch đã thanh toán hoặc đã kết thúc, không thể chỉnh sửa." });
-            // }
             lich.ThoiGianBatDau = dto.ThoiGianBatDau;
             lich.ThoiGianKetThuc = dto.ThoiGianKetThuc;
             lich.TomTat = dto.TomTat;
@@ -272,7 +260,6 @@ namespace IBODY_WebAPI.Controllers
             return Ok(new { message = "Đã xóa lịch hẹn thành công." });
         }
 
-        // Hiển thị danh sách báo cáo vi phạm của người dùng
         [HttpGet("bao-cao-chuyen-gia")]
         public async Task<IActionResult> GetBaoCaoChuyenGia()
         {
@@ -303,7 +290,7 @@ namespace IBODY_WebAPI.Controllers
             });
         }
 
-        // khóa tài khoản chuyên gia
+
         [HttpPost("khoa-tai-khoan/{id}")]
         public async Task<IActionResult> KhoaTaiKhoan(int id)
         {
@@ -316,7 +303,7 @@ namespace IBODY_WebAPI.Controllers
 
             return Ok(new { message = "Đã khóa tài khoản chuyên gia." });
         }
-        // mở khóa tài khoản chuyên gia
+
         [HttpPost("mo-khoa-tai-khoan/{id}")]
         public async Task<IActionResult> MoKhoaTaiKhoan(int id)
         {
@@ -333,7 +320,6 @@ namespace IBODY_WebAPI.Controllers
             return Ok(new { message = "Đã mở khóa tài khoản thành công." });
         }
 
-        // Lấy danh sách tất cả phương thức thanh toán hệ thống
         [HttpGet("he-thong-phuong-thuc")]
         public async Task<IActionResult> GetAllSystemMethods()
         {
@@ -351,7 +337,6 @@ namespace IBODY_WebAPI.Controllers
             return Ok(list);
         }
 
-        //  Thêm phương thức mới
         [HttpPost("themThanhToan")]
         public async Task<IActionResult> AddSystemMethod([FromBody] ThemPhuongThucDto dto)
         {
@@ -371,7 +356,6 @@ namespace IBODY_WebAPI.Controllers
             return Ok(new { message = "Đã thêm phương thức mới." });
         }
 
-        //  Cập nhật phương thức
         [HttpPut("capNhatPhuongThucThanhToan/{id}")]
         public async Task<IActionResult> UpdateSystemMethod(int id, [FromBody] ThemPhuongThucDto dto)
         {
@@ -387,7 +371,6 @@ namespace IBODY_WebAPI.Controllers
             return Ok(new { message = "Đã cập nhật phương thức." });
         }
 
-        //Xóa phương thức
         [HttpDelete("xoaPhuongThucThanhToan/{id}")]
         public async Task<IActionResult> DeleteSystemMethod(int id)
         {
@@ -402,8 +385,6 @@ namespace IBODY_WebAPI.Controllers
 
 
 
-        
-        // Lấy lịch sử chat
         [HttpGet("chat/lich-su")]
         public async Task<IActionResult> LichSuChatAdmin([FromQuery] int taiKhoan1, [FromQuery] int taiKhoan2)
         {
@@ -425,7 +406,6 @@ namespace IBODY_WebAPI.Controllers
             return Ok(tinNhanList);
         }
 
-        //Xóa 1 tin nhắn
         [HttpDelete("chat/xoa1TinNhan/{id}")]
         public async Task<IActionResult> XoaTinNhan(int id)
         {
@@ -439,7 +419,7 @@ namespace IBODY_WebAPI.Controllers
             return Ok(new { message = "Đã xóa tin nhắn." });
         }
 
-        //Xóa toàn bộ đoạn chat giữa 2 tài khoản
+
         [HttpDelete("chat/xoaToanBo")]
         public async Task<IActionResult> XoaDoanChat([FromQuery] int taiKhoan1, [FromQuery] int taiKhoan2)
         {
@@ -478,7 +458,7 @@ namespace IBODY_WebAPI.Controllers
             return Ok(lichHen);
         }
        
-        // Lấy danh sách đánh giá của chuyên gia
+
         [HttpGet("danhGiaCuaChuyenGia")]
         public async Task<IActionResult> GetAllDanhGiaChuyenGia()
         {
@@ -501,7 +481,7 @@ namespace IBODY_WebAPI.Controllers
             return Ok( new { count = list.Count, data = list });
         }
 
-        // Xóa đánh giá sai sự thật
+
         [HttpDelete("xoaDanhGia/{id}")]
         public async Task<IActionResult> XoaDanhGiaChuyenGia(int id)
         {

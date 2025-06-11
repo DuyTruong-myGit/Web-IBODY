@@ -22,11 +22,6 @@ public class ProfileController : ControllerBase
         var user = await _context.TaiKhoans.FindAsync(dto.TaiKhoanId);
         if (user == null)
             return NotFound(new { message = "Không tìm thấy tài khoản." });
-
-        // // Kiểm tra nếu đã gửi yêu cầu rồi
-        // if (await _context.ChuyenGia.AnyAsync(x => x.TaiKhoanId == dto.TaiKhoanId))
-        //     return BadRequest(new { message = "Bạn đã gửi yêu cầu trước đó." });
-
         var expert = new ChuyenGium
         {
             TaiKhoanId = dto.TaiKhoanId,

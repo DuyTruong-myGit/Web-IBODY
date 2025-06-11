@@ -15,7 +15,6 @@ namespace IBODY_WebAPI.Controllers
             _context = context;
         }
 
-        // Lấy danh sách chuyên gia đã xác thực 
         [HttpGet("chuyen-gia")]
         public async Task<IActionResult> GetExperts([FromQuery] string? keyword, [FromQuery] string? chuyenMon, [FromQuery] int? thu, [FromQuery] int? soNamKinhNghiem)
         {

@@ -14,8 +14,6 @@ namespace IBODY_WebAPI.Controllers
             _context = context;
         }
 
-
-
         [HttpPost("tao-lich")]
         public async Task<IActionResult> TaoLichHen([FromBody] TaoLichHenDto dto)
         {
@@ -82,10 +80,6 @@ namespace IBODY_WebAPI.Controllers
                     thoiGianBatDau = thoiGianBatDau.AddMinutes(30);
                 }
 
-                 // Trừ lượt  , bỏ vì sai logic
-                // goi.SoLuotConLai -= soCa;
-                // if (goi.SoLuotConLai == 0) goi.TrangThai = "het_hieu_luc";
-
                 await _context.SaveChangesAsync();
 
                 return Ok(new { message = $"Đặt {soCa} ca liên tiếp thành công." });
@@ -151,8 +145,6 @@ namespace IBODY_WebAPI.Controllers
 
             return Ok(slotRanh);
         }
-
-
 
     }
 

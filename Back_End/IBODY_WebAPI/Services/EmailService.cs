@@ -19,7 +19,7 @@ public interface IEmailService
             email.To.Add(MailboxAddress.Parse(toEmail));
             email.Subject = subject;
 
-            // ✅ Gán HTML vào Text khi dùng "html"
+            // Gán HTML vào Text khi dùng "html"
             email.Body = new TextPart("html")
             {
                 Text = htmlContent

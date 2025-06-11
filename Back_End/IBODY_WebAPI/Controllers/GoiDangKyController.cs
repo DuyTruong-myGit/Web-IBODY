@@ -21,7 +21,7 @@ namespace IBODY_WebAPI.Controllers
         {
             var result = await _context.GoiDichVus
                 .Where(g => g.DanhCho == "nguoi_dung")
-                .OrderBy(g => g.Id) // đảm bảo sắp xếp rõ ràng theo ID
+                .OrderBy(g => g.Id)
                 .ToListAsync();
             return Ok(result);
         }

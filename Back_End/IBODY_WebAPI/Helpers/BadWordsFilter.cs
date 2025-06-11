@@ -6,7 +6,7 @@ namespace IBODY_WebAPI.Helpers
     {
         private static List<string> _badWords = new();
 
-        // ✅ Gọi khi ứng dụng khởi động
+        // Gọi khi ứng dụng khởi động
         public static void Load(string filePath)
         {
             if (!File.Exists(filePath))
@@ -16,7 +16,7 @@ namespace IBODY_WebAPI.Helpers
             _badWords = JsonSerializer.Deserialize<List<string>>(json) ?? new List<string>();
         }
 
-        // ✅ Gọi mỗi lần muốn kiểm tra nội dung
+        // Gọi mỗi lần muốn kiểm tra nội dung
         public static bool ContainsBadWords(string content)
         {
             var lower = content.ToLower();
